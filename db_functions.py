@@ -3,13 +3,42 @@
     They are called by the menus in monitor_modes.
 """
 import pyodbc
+import pandas as pd
 from monitor_modes import *
 from main import LibStart
 
 
 class DBcontrol:
-    connection_string = 'DRIVER={SQL Server}; SERVER=HQ-GIIOKUS\SQLEXPRESS; Database=PersonalLibrary; UID=HQ-GIIOKUS\Magic; PWD=NULL;'
 
+    # Connection string components
+    DRIVER = '{ODBC Driver 17 for SQL Server}'
+    SERVER_NAME = 'HQ-GIIOKUS\SQLEXPRESS'
+    DATABASE_NAME = 'PersonalLibrary'
+
+    # Define connection string
+    CONNECTION_STRING = """
+    Driver={driver}; 
+    Server={server};
+    Database={database}; 
+    Trusted_Connection=yes;
+    """.format(
+        driver = DRIVER,
+        server = SERVER_NAME,
+        database = DATABASE_NAME
+    )
+
+    def sendQuery(query):
+        # Contact the db and make the query
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            cursor = conx.cursor()
+            cursor.execute(query)
+            data = cursor.fetchall()
+            cursor.commit()
+        
+        # Print the result
+        print(data) # Might need to use pandas to transform.
+        print()
+        print()
 
     def viewBookControl():
         """
@@ -17,16 +46,7 @@ class DBcontrol:
         """
         query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
 
-        # Contact the db and make the query
-        with pyodbc.connect(DBcontrol.connection_string) as conx:
-            cursor = conx.cursor()
-            cursor.execute(query)
-            data = cursor.fetchall()
-        
-        # Print the result
-        print(data) # Might need to use pandas to transform.
-        print()
-        print()
+        DBcontrol.sendQuery(query)
 
         # Allow the user to continue.
         print("Would you like to continue further?")
@@ -42,16 +62,7 @@ class DBcontrol:
         """
         query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
 
-        # Contact the db and make the query
-        with pyodbc.connect(DBcontrol.connection_string) as conx:
-            cursor = conx.cursor()
-            cursor.execute(query)
-            data = cursor.fetchall()
-        
-        # Print the result
-        print(data) # Might need to use pandas to transform.
-        print()
-        print()
+        DBcontrol.sendQuery(query)
 
         # Allow the user to continue.
         print("Would you like to continue further?")
@@ -67,16 +78,7 @@ class DBcontrol:
         """
         query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
 
-        # Contact the db and make the query
-        with pyodbc.connect(DBcontrol.connection_string) as conx:
-            cursor = conx.cursor()
-            cursor.execute(query)
-            data = cursor.fetchall()
-        
-        # Print the result
-        print(data) # Might need to use pandas to transform.
-        print()
-        print()
+        DBcontrol.sendQuery(query)
 
         # Allow the user to continue.
         print("Would you like to continue further?")
@@ -221,18 +223,11 @@ class DBcontrol:
 
         # Query must be redefined before runtime.
         # Mutliple queries might need to be run.
-        query = f"INSERT {isbn}, {title} INTO PersonalLibrary" 
+        query = f"""
+        INSERT INTO PersonalLibrary (ISBN, Title, Author, Pages, Genre, Publisher, Collection, Read, Language, Pub_Year)
+        VALUES({isbn}, {title}, {author}, {pages}, {genre}, {pub}, {collection}, {read_yet}, {lang}, {pub_year})"""
 
-        # Contact the db and make the query
-        with pyodbc.connect(DBcontrol.connection_string) as conx:
-            cursor = conx.cursor()
-            cursor.execute(query)
-            data = cursor.fetchall()
-        
-        # Print the result
-        print(data) # Might need to use pandas to transform.
-        print()
-        print()
+        DBcontrol.sendQuery(query)
 
         # Allow the user to continue.
         print("Would you like to continue further?")
