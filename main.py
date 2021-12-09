@@ -10,7 +10,7 @@ from monitor_modes import MainMenu
 class LibStart:
     running = True
 
-    def mainLoop():
+    def mainLoop(running):
         while running:
 
             # Main Menu: Choose from options to branch from.
@@ -20,4 +20,4 @@ class LibStart:
             running = False
 
 # Launch
-LibStart.mainLoop()
+LibStart.mainLoop(LibStart.running)

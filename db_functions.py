@@ -4,8 +4,9 @@
 """
 import pyodbc
 import pandas as pd
-from monitor_modes import *
-from main import LibStart
+from monitor_modes import MainMenu, Chooser
+from screen_tools import Tools
+# from main import LibStart
 
 
 class DBcontrol:
@@ -32,13 +33,23 @@ class DBcontrol:
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
             cursor = conx.cursor()
             cursor.execute(query)
-            data = cursor.fetchall()
-            cursor.commit()
+            # fetch data 
+            records = cursor.fetchall()
+
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+
+            # Dump the data into a dataframe
+            dump = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+
+            # Print the head
+            print(dump.head())
+
+            # cursor.commit()
         
-        # Print the result
-        print(data) # Might need to use pandas to transform.
-        print()
-        print()
 
     def viewBookControl():
         """
@@ -93,7 +104,7 @@ class DBcontrol:
         """
             This function controls the text for the addBook function for readability.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print('Adding a Book')
         print('*' * 20)
@@ -103,7 +114,7 @@ class DBcontrol:
         user_input = input()
 
         if user_input in Chooser.sayYay:
-            screen_clear()
+            Tools.screen_clear()
             print('*' * 20)
             print('What is the ISBN?')
             print('*' * 20)
@@ -194,7 +205,7 @@ class DBcontrol:
                 read_yet = 0
 
             sleep(2)
-            screen_clear()
+            Tools.screen_clear()
             print()
             print('*' * 20)
             print('Here is what you have registered.\nIs this correct? ')
@@ -234,15 +245,15 @@ class DBcontrol:
         user_input = input()
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
-        elif user_input in Chooser.sayNay:
-            LibStart.running = False
+        # elif user_input in Chooser.sayNay:
+        #     LibStart.running = False
 
 
     def markBook():
         """
             This function will mark a book as read.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print('Another book bites the dust!\nLets mark it down!')
         print('*' * 20)
@@ -250,7 +261,7 @@ class DBcontrol:
         print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            screen_clear()
+            Tools.screen_clear()
             print('*' * 40)
             print('What is the isbn of the book you would like to mark as read?')
             print('*' * 40)
@@ -263,19 +274,12 @@ class DBcontrol:
                 # Mutliple queries might need to be run.
                 query = f"UPDATE WHERE {isbn} INTO PersonalLibrary" 
 
-                # Contact the db and make the query
-                with pyodbc.connect(DBcontrol.connection_string) as conx:
-                    cursor = conx.cursor()
-                    cursor.execute(query)
+                DBcontrol.sendQuery(query)
 
                 # Second query will display the books information.
                 query = "SELECT * FROM Database"
 
-                # Contact the db and make the query
-                with pyodbc.connect(DBcontrol.connection_string) as conx:
-                    cursor = conx.cursor()
-                    cursor.execute(query)
-                    data = cursor.fetchall()
+                DBcontrol.sendQuery(query)
 
             elif user_input in Chooser.sayNay:
                 DBcontrol.markBook()
@@ -286,7 +290,7 @@ class DBcontrol:
         """
             This function will remove a book from the db.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print('Removing a Book')
         print('*' * 20)
@@ -294,7 +298,7 @@ class DBcontrol:
         print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            screen_clear()
+            Tools.screen_clear()
             print('*' * 40)
             print('What is the isbn of the book you would like to remove?')
             print('*' * 40)
@@ -307,19 +311,12 @@ class DBcontrol:
                 # Mutliple queries might need to be run.
                 query = f"DELETE WHERE {isbn} INTO PersonalLibrary" 
 
-                # Contact the db and make the query
-                with pyodbc.connect(DBcontrol.connection_string) as conx:
-                    cursor = conx.cursor()
-                    cursor.execute(query)
+                DBcontrol.sendQuery(query)
 
                 # Second query will display the books information.
                 query = "SELECT * FROM Database"
 
-                # Contact the db and make the query
-                with pyodbc.connect(DBcontrol.connection_string) as conx:
-                    cursor = conx.cursor()
-                    cursor.execute(query)
-                    data = cursor.fetchall()
+                DBcontrol.sendQuery(query)
 
             elif user_input in Chooser.sayNay:
                 DBcontrol.markBook()

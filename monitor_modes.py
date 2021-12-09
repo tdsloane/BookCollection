@@ -1,15 +1,10 @@
-import os
+"""
+    The classes and functions herein are for the express purpose
+    of creating and displaying menus while also connecting menus to eachother.
+"""
 from time import sleep
-
+from screen_tools import Tools
 from db_functions import DBcontrol
-
-
-def screen_clear():
-    """
-        This function clears the terminal screen.
-    """
-    if os.name == 'nt':
-        _ = os.system('cls')
 
 class MainMenu:
 
@@ -17,13 +12,13 @@ class MainMenu:
         """
             This function displays the main menu.
         """
-        screen_clear()
+        Tools.screen_clear()
         print()
         print('*' * 20)
         print('Welcome to the\nGiioke Book System!')
         print('*' * 20)
         sleep(5)
-        screen_clear()
+        Tools.screen_clear()
 
         print('*' * 20)
         print('What would you like to do?')
@@ -57,7 +52,7 @@ class MainMenu:
         """
             This function displays the query menu.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print('What would you like to query?')
         print('*' * 20)
@@ -80,7 +75,7 @@ class MainMenu:
         """
             This function uses an insert statement to add a book to the db.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print("So, you want to add a book to the list?")
         print("Say yes or no.")
@@ -90,14 +85,14 @@ class MainMenu:
         if user_input in Chooser.sayNay:
             MainMenu.queryMenu()
         elif user_input in Chooser.sayYay:
-            DBcontrol.addBook()
+            DBcontrol.addBookInfo()
 
 
     def markBook():
         """
             This function uses an update statement to update a books read status.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print("So, you want to mark a book as read?")
         print("Say yes or no.")
@@ -115,7 +110,7 @@ class MainMenu:
         """
             This function uses an delete statement to remove a book from the db.
         """
-        screen_clear()
+        Tools.screen_clear()
         print('*' * 20)
         print("So, you want to remove a book?")
         print("Say yes or no.")
@@ -132,7 +127,7 @@ class MainMenu:
 class QueryMenu:
 
     def viewBooks():
-        screen_clear()
+        Tools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
@@ -162,7 +157,7 @@ class QueryMenu:
                 QueryMenu.viewBooks()
 
     def viewUnreadBooks():
-        screen_clear()
+        Tools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
@@ -191,7 +186,7 @@ class QueryMenu:
                 QueryMenu.viewUnreadBooks()
 
     def viewReadBooks():
-        screen_clear()
+        Tools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
