@@ -1,1 +1,3 @@
-# addBook SQL is finished
+# TO DO:
+
+    - Rework addBook() so that it adds to every table.

@@ -3,7 +3,10 @@
 """
 import os
 
+
 class Tools:
+
+    running = True
 
     def screen_clear():
         """
@@ -11,8 +14,3 @@ class Tools:
         """
         if os.name == 'nt':
             _ = os.system('cls')
-
-
-    
-
-    

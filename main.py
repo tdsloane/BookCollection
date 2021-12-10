@@ -1,4 +1,5 @@
 import os
+from screen_tools import Tools
 from monitor_modes import MainMenu
 
 """
@@ -7,11 +8,11 @@ from monitor_modes import MainMenu
     modifying the collection, adding to, or reducing the colleciton, etc.
 """
 
+
 class LibStart:
-    running = True
 
     def mainLoop(running):
-        while running:
+        while Tools.running:
 
             # Main Menu: Choose from options to branch from.
             MainMenu.startMenu()
@@ -20,4 +21,4 @@ class LibStart:
             running = False
 
 # Launch
-LibStart.mainLoop(LibStart.running)
+LibStart.mainLoop(Tools.running)
