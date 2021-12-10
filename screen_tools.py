@@ -4,7 +4,7 @@
 import os
 
 
-class Tools:
+class ScreenTools:
 
     running = True
 

@@ -5,22 +5,22 @@
 import pyodbc
 import pandas as pd
 from time import sleep
-from screen_tools import Tools
+from screen_tools import ScreenTools
 
 
 class MainMenu:
 
-    def startMenu():
+    def startMenu(): # Needs to be changed
         """
             This function displays the main menu.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print()
         print('*' * 20)
         print('Welcome to the\nGiioke Book System!')
         print('*' * 20)
         sleep(5)
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
 
         print('*' * 20)
         print('What would you like to do?')
@@ -54,7 +54,7 @@ class MainMenu:
         """
             This function displays the query menu.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print('What would you like to query?')
         print('*' * 20)
@@ -77,7 +77,7 @@ class MainMenu:
         """
             This function uses an insert statement to add a book to the db.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print("So, you want to add a book to the list?")
         print("Say yes or no.")
@@ -94,7 +94,7 @@ class MainMenu:
         """
             This function uses an update statement to update a books read status.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print("So, you want to mark a book as read?")
         print("Say yes or no.")
@@ -112,7 +112,7 @@ class MainMenu:
         """
             This function uses an delete statement to remove a book from the db.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print("So, you want to remove a book?")
         print("Say yes or no.")
@@ -129,7 +129,7 @@ class MainMenu:
 class QueryMenu:
 
     def viewBooks():
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
@@ -159,7 +159,7 @@ class QueryMenu:
                 QueryMenu.viewBooks()
 
     def viewUnreadBooks():
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
@@ -188,7 +188,7 @@ class QueryMenu:
                 QueryMenu.viewUnreadBooks()
 
     def viewReadBooks():
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         
         # Offer a look at the list
         print('*' * 20)
@@ -272,6 +272,10 @@ class DBcontrol:
     )
 
     def sendQuery(query):
+        """
+            sendQuery() creates a connection string and connects to SQL Server.
+            The query is then executed and a pandas table is printed to verify before commiting.
+        """
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
             cursor = conx.cursor()
@@ -308,7 +312,7 @@ class DBcontrol:
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
-            Tools.running = False
+            ScreenTools.running = False
 
     def unreadBookControl():
         """
@@ -324,7 +328,7 @@ class DBcontrol:
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
-            Tools.running = False
+            ScreenTools.running = False
 
     def readBookControl():
         """
@@ -340,14 +344,229 @@ class DBcontrol:
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
-            Tools.running = False
+            ScreenTools.running = False
 
 
-    def addBookInfo():
+    def askAuthorInfo():
         """
-            This function controls the text for the addBook function for readability.
+            This function asks the user for information about the author they want to add.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
+        print('*' * 20)
+        print('Adding an Author')
+        print('*' * 20)
+        print("Would you like to continue further?")
+        print("I will need to ask you a series of questions to continue.")
+        print()
+        user_input = input()
+
+        if user_input in Chooser.sayYay:
+
+            print('*' * 20)
+            print('What is the author\'s first name?')
+            print('*' * 20)
+            print()
+            author_first = input()
+            print()
+
+            print('*' * 20)
+            print('What is the author\'s last name?')
+            print('*' * 20)
+            print()
+            author_last = input()
+            print()
+
+            print('*' * 20)
+            print('What country are they from?')
+            print('*' * 20)
+            print()
+            author_loc = input()
+            print()
+
+            sleep(2)
+            ScreenTools.screen_clear()
+            print()
+            print('*' * 20)
+            print('Here is what you have registered.\nIs this correct? ')
+            print('*' * 20)
+            print()
+            
+            print(f"First Name: {author_first}, Last Name: {author_last}, Location: {author_loc}")
+            print()
+            print('*' * 20)
+
+            user_input = input("Is this information correct?\nPlease say yes or no.\n")
+            if user_input in Chooser.sayYay:
+                # Send it out!
+                DBcontrol.addToAuthorTable(author_first, author_last, author_loc)
+            # Send them back if not correct.
+            elif user_input in Chooser.sayNay:
+                DBcontrol.askAuthorInfo()
+
+    def askGenreInfo():
+        """
+            This function asks the user for information about the genre they want to add.
+        """
+        ScreenTools.screen_clear()
+        print('*' * 20)
+        print('Adding a Genre')
+        print('*' * 20)
+        print("Would you like to continue further?")
+        print("I will need to ask you a series of questions to continue.")
+        print()
+        user_input = input()
+        
+        if user_input in Chooser.sayYay:
+
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('What is the genre?')
+            print('*' * 20)
+            print()
+            genre = input()
+            print()
+
+            print('*' * 20)
+            print('Write a description of this genre.')
+            print('*' * 20)
+            print()
+            genre_desc = input()
+            print()
+
+            sleep(2)
+            ScreenTools.screen_clear()
+            print()
+            print('*' * 20)
+            print('Here is what you have registered.\nIs this correct? ')
+            print('*' * 20)
+            print()
+            
+            print(f"Genre: {genre}, Description: {genre_desc}")
+            print()
+            print('*' * 20)
+
+            user_input = input("Is this information correct?\nPlease say yes or no.\n")
+            if user_input in Chooser.sayYay:
+                # Send it out!
+                DBcontrol.addToGenreTable(genre, genre_desc)
+            # Send them back if not correct.
+            elif user_input in Chooser.sayNay:
+                DBcontrol.askGenreInfo()
+
+    def askCollectionInfo():
+        """
+            This function asks the user for information about the collection they want to add.
+        """
+        ScreenTools.screen_clear()
+        print('*' * 20)
+        print('Adding a Collection')
+        print('*' * 20)
+        print("Would you like to continue further?")
+        print("I will need to ask you a series of questions to continue.")
+        print()
+        user_input = input()
+        
+        if user_input in Chooser.sayYay:
+
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Is it part of a collection?')
+            print('*' * 20)
+            print()
+            user_input = input()
+            if user_input in Chooser.sayYay:
+                print()
+                print('*' * 20)
+                print('Which collection?')
+                print('*' * 20)
+                print()
+                collection = input()
+            elif user_input in Chooser.sayNay:
+                collection = ''
+            
+            print('*' * 20)
+            print('Who is the Publisher?')
+            print('*' * 20)
+            print()
+            pub = input()
+            print()
+
+            sleep(2)
+            ScreenTools.screen_clear()
+            print()
+            print('*' * 20)
+            print('Here is what you have registered.\nIs this correct? ')
+            print('*' * 20)
+            print()
+            
+            print(f"Collection: {collection}\nPublisher: {pub}")
+            print()
+            print('*' * 20)
+
+            user_input = input("Is this information correct?\nPlease say yes or no.\n")
+            if user_input in Chooser.sayYay:
+                # Send it out!
+                DBcontrol.addToCollectionTable(pub, collection)
+            # Send them back if not correct.
+            elif user_input in Chooser.sayNay:
+                DBcontrol.askCollectionInfo()
+
+    def askPublisherInfo():
+        """
+            This function asks the user for information about the publisher they want to add.
+        """
+        ScreenTools.screen_clear()
+        print('*' * 20)
+        print('Adding a Publisher')
+        print('*' * 20)
+        print("Would you like to continue further?")
+        print("I will need to ask you a series of questions to continue.")
+        print()
+        user_input = input()
+
+        if user_input in Chooser.sayYay:
+            ScreenTools.screen_clear()
+            
+            print('*' * 20)
+            print('Who is the Publisher?')
+            print('*' * 20)
+            print()
+            pub = input()
+            print()
+
+            print('*' * 20)
+            print('Where are they located?')
+            print('*' * 20)
+            print()
+            pub_loc = input()
+            print()
+
+            
+            sleep(2)
+            ScreenTools.screen_clear()
+            print()
+            print('*' * 20)
+            print('Here is what you have registered.\nIs this correct? ')
+            print('*' * 20)
+            print()
+            
+            print(f"Publisher: {pub}\nLocation: {pub_loc}")
+            print()
+            print('*' * 20)
+
+            user_input = input("Is this information correct?\nPlease say yes or no.\n")
+            if user_input in Chooser.sayYay:
+                # Send it out!
+                DBcontrol.addToPublisherTable(pub, pub_loc)
+            # Send them back if not correct.
+            elif user_input in Chooser.sayNay:
+                DBcontrol.askPublisherInfo()
+
+    def askBookInfo():
+        """
+            This function asks the user for information about the book they want to add.
+        """
+        ScreenTools.screen_clear()
         print('*' * 20)
         print('Adding a Book')
         print('*' * 20)
@@ -357,7 +576,7 @@ class DBcontrol:
         user_input = input()
 
         if user_input in Chooser.sayYay:
-            Tools.screen_clear()
+            ScreenTools.screen_clear()
             print('*' * 20)
             print('What is the ISBN?')
             print('*' * 20)
@@ -379,13 +598,6 @@ class DBcontrol:
             author = input()
             print()
 
-            # print('*' * 20)
-            # print('What country are they from?')
-            # print('*' * 20)
-            # print()
-            # author_loc = input()
-            # print()
-
             print('*' * 20)
             print('How many pages is the book?')
             print('*' * 20)
@@ -393,7 +605,7 @@ class DBcontrol:
             pages = input()
             print()
 
-            Tools.screen_clear()
+            ScreenTools.screen_clear()
 
             print('*' * 20)
             print('What is the genre?')
@@ -450,7 +662,7 @@ class DBcontrol:
                 read_yet = 0
 
             sleep(2)
-            Tools.screen_clear()
+            ScreenTools.screen_clear()
             print()
             print('*' * 20)
             print('Here is what you have registered.\nIs this correct? ')
@@ -473,33 +685,79 @@ class DBcontrol:
             MainMenu.startMenu()
 
 
-    def addBook(isbn, title, author, pages, genre, pub, collection, read_yet, lang, pub_year):
+
+        #     # Allow the user to continue.
+        # print("Would you like to continue further?")
+        # user_input = input()
+        # if user_input in Chooser.sayYay:
+        #     MainMenu.startMenu()
+        # elif user_input in Chooser.sayNay:
+        #     ScreenTools.running = False
+
+
+    def addToAuthorTable(author_first, author_last, country):
+        """
+            Adds information to the author table.
+        """
+
+        query_author_table = f"""
+        INSERT INTO PersonalLibrary (AuthorFirst, AuthorLast, Country)
+        VALUES({author_first}, {author_last}, {country})"""
+
+        DBcontrol.sendQuery(query_author_table)
+
+    def addToGenreTable(genre, genre_desc):
+        """
+            Adds information to the genre table.
+        """
+
+        query_genre_table = f"""
+        INSERT INTO PersonalLibrary (Genre, Description)
+        VALUES({genre}, {genre_desc})"""
+
+        DBcontrol.sendQuery(query_genre_table)
+
+    def addToCollectionTable(collection):
+        """
+            Adds information to the collection table.
+        """
+
+        query_collection_table = f"""
+        INSERT INTO PersonalLibrary (Collection)
+        VALUES({collection})"""
+
+        DBcontrol.sendQuery(query_collection_table)
+
+    def addToPublisherTable(pub, pub_country):
+        """
+            Adds information to the publisher table.
+        """
+
+        query_publisher_table = f"""
+        INSERT INTO PersonalLibrary (Publisher, Pub_Country)
+        VALUES({pub}, {pub_country})"""
+
+        DBcontrol.sendQuery(query_publisher_table)
+
+    def addToBookTable(isbn, title, pages, pub, collection, read_yet, lang, pub_year, country):
         """
             Adds a book to the db using user input.
         """
 
         # Query must be redefined before runtime.
         # Mutliple queries might need to be run.
-        query = f"""
-        INSERT INTO PersonalLibrary (ISBN, Title, Author, Pages, Genre, Publisher, Collection, Read, Language, Pub_Year)
-        VALUES({isbn}, {title}, {author}, {pages}, {genre}, {pub}, {collection}, {read_yet}, {lang}, {pub_year})"""
+        query_book_table = f"""
+        INSERT INTO PersonalLibrary (ISBN, Title, Language, Pages, Done, Pub_Year)
+        VALUES({isbn}, {title}, {lang}, {pages}, {read_yet},  {pub_year})"""
 
-        DBcontrol.sendQuery(query)
-
-        # Allow the user to continue.
-        print("Would you like to continue further?")
-        user_input = input()
-        if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
-        # elif user_input in Chooser.sayNay:
-        #     LibStart.running = False
+        DBcontrol.sendQuery(query_book_table)
 
 
     def markBook():
         """
             This function will mark a book as read.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print('Another book bites the dust!\nLets mark it down!')
         print('*' * 20)
@@ -507,7 +765,7 @@ class DBcontrol:
         print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            Tools.screen_clear()
+            ScreenTools.screen_clear()
             print('*' * 40)
             print('What is the isbn of the book you would like to mark as read?')
             print('*' * 40)
@@ -536,7 +794,7 @@ class DBcontrol:
         """
             This function will remove a book from the db.
         """
-        Tools.screen_clear()
+        ScreenTools.screen_clear()
         print('*' * 20)
         print('Removing a Book')
         print('*' * 20)
@@ -544,7 +802,7 @@ class DBcontrol:
         print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            Tools.screen_clear()
+            ScreenTools.screen_clear()
             print('*' * 40)
             print('What is the isbn of the book you would like to remove?')
             print('*' * 40)

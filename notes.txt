@@ -1,3 +1,7 @@
 # TO DO:
 
-    - Rework addBook() so that it adds to every table.
+    - Rework the main menu to reflect the new options
+    - addToTable functions must be created for each table
+    - Research how to grab the key of each table
+    - Research how to add a new key value
+    - 
