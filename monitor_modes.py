@@ -271,7 +271,7 @@ class DBcontrol:
         database = DATABASE_NAME
     )
 
-    def sendQuery(query, listed_data):
+    def sendInsertQuery(query, listed_data):
         """
             sendQuery() creates a connection string and connects to SQL Server.
             The query is then executed and a pandas table is printed to verify before commiting.
@@ -279,24 +279,28 @@ class DBcontrol:
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
             cursor = conx.cursor()
-            cursor.executemany(query, listed_data)
-            # fetch data 
-            records = cursor.fetchall()
-
+            cursor.execute(query, listed_data)
             # Commit changes | commented out for testing
-            # cursor.commit()
-            
+            cursor.commit()
+
+            # Create new query for creation of printed check
+            checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+            # fetch data 
+            records = cursor.execute(checking_query).fetchall()
             # Define column names
             columns = [column[0] for column in cursor.description]
 
             # Dump the data into a dataframe
-            dump = pd.DataFrame.from_records(
+            df = pd.DataFrame.from_records(
                 data=records,
                 columns=columns
             )
 
-            # Print the head
-            print(dump.head())
+            # Select the row belonging to the new values
+            isbn = (df['ISBN'] == listed_data[0])
+
+            # Print the new row
+            print(df.loc[isbn])
 
             
         
@@ -557,20 +561,22 @@ class DBcontrol:
         """
 
 
-        data_values = [
-            {isbn}, 
-            {title}, 
-            {author},
-            {genre},
-            {lang},
-            {pages}, 
-            {read_yet}, 
-            {pub}, 
-            {collection_name}, 
-            {pub_year}
-        ]
+        data_values = (
+            isbn, 
+            title, 
+            author,
+            genre,
+            lang,
+            pages, 
+            read_yet, 
+            pub, 
+            collection_name, 
+            pub_year
+        )
 
-        DBcontrol.sendQuery(query_book_table, data_values)
+        # params = list(tuple(row) for row in data_values.values)
+
+        DBcontrol.sendInsertQuery(query_book_table, data_values)
 
     def markBook():
         """
