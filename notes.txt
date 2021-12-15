@@ -1,7 +1,8 @@
 # TO DO:
 
-    - Rework the main menu to reflect the new options
-    - addToTable functions must be created for each table
-    - Research how to grab the key of each table
-    - Research how to add a new key value
-    - 
+    - Complete functionality of query options (view read, view unread, custom query)
+    - Complete functionality of the delete a book option.
+    - Pretty it up!!
+    - Research connecting to db from another computer (might just be local)
+    - Make executable.
+    - Rest
