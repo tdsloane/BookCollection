@@ -26,24 +26,24 @@ class MainMenu:
         print('What would you like to do?')
         print('*' * 20)
         print()
-        print('* To query the library:\n* Press 1')
+        print('* To Query the library:\n* Press 1')
         print()
-        print('* To add a book:\n* Press 2')
+        print('* To Add a book:\n* Press 2')
         print()
-        print('* To mark a book as read:\n* Press 3')
+        print('* To Mark a book as read:\n* Press 3')
         print()
-        print('* To remove a book from the system:\n* Press 4')
+        print('* To Remove a book from the system:\n* Press 4')
         print()
-        user_input = input()
+        print('* To Quit:\n* Press 5')
+        print()
+        user_input = int(input())
         try:
-            user_input = int(user_input)
-            print(type(user_input))
-            if user_input > 4:
-                print("Please enter a number 1-4")
+            if user_input > 5:
+                print("Please enter a number 1-5")
                 sleep(5)
                 MainMenu.startMenu()
         except ValueError as e:
-            print(f"{e} Please enter a number 1-4.")
+            print(f"{e} Please enter a number 1-5.")
             sleep(5)
             MainMenu.startMenu()
         print("Int Check")
@@ -67,10 +67,7 @@ class MainMenu:
         print()
         print('* To create a custom query:\n* Press 4')
         print()
-        user_input = input()
-        if user_input != int or user_input > 4:
-            print("Please enter a number 1-4")
-            MainMenu.queryMenu()
+        user_input = int(input())
         Chooser.queryChooser(user_input)
 
     def addBook():
@@ -104,8 +101,14 @@ class MainMenu:
         if user_input in Chooser.sayNay:
             MainMenu.queryMenu()
         elif user_input in Chooser.sayYay:
-            # This is where we will update a book.
-            pass
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print("Congradulations!!")
+            print("Please enter the ISBN of the book you read.")
+            print('*' * 20)
+            print()
+            user_input = int(input())
+            DBcontrol.sendMarkQuery(user_input)
 
 
     def deleteBook():
@@ -130,7 +133,6 @@ class QueryMenu:
 
     def viewBooks():
         ScreenTools.screen_clear()
-        
         # Offer a look at the list
         print('*' * 20)
         print('Would you like to see the list of all books?\nYes or No?')
@@ -148,12 +150,14 @@ class QueryMenu:
                 MainMenu.startMenu()
             # Access db
             elif user_input in Chooser.sayYay:
-                DBcontrol.viewBookControl()
-            
-        # Content Checks for user input
+                _ = 2
+                DBcontrol.viewBookControl(_)
             elif user_input not in (Chooser.sayYay + Chooser.sayNay):
                 print("Please answer yes or no.")
                 QueryMenu.viewBooks()
+        elif user_input in Chooser.sayYay:
+            _ = 1
+            DBcontrol.viewBookControl(_)
         elif user_input not in (Chooser.sayYay + Chooser.sayNay):
                 print("Please answer yes or no.")
                 QueryMenu.viewBooks()
@@ -236,6 +240,12 @@ class Chooser:
             MainMenu.markBook()
         elif _ == 4:
             MainMenu.deleteBook()
+        elif _ == 5:
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print("Goodbye! Happy Reading!")
+            print('*' * 20)
+            ScreenTools.running = False
 
     def queryChooser(_):
         """
@@ -273,8 +283,8 @@ class DBcontrol:
 
     def sendInsertQuery(query, listed_data, isbn):
         """
-            sendQuery() creates a connection string and connects to SQL Server.
-            The query is then executed. A confirmation prints as well as the row created in the table.
+            sendInsertQuery() creates a connection string and connects to SQL Server then
+            the insert query is executed. A confirmation prints as well as the row created in the table.
         """
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
@@ -305,24 +315,143 @@ class DBcontrol:
             filt = (df['ISBN'] == int(isbn))
             print(df.loc[filt])
             print()
+
+    def sendFullQuery(query):
+        """
+            sendFullQuery() creates a connection string and creates a dataframe.
+            It then displays the entire library from the dataframe.
+        """
+        pd.set_option('display.max_rows', 500)
+        # Contact the db and make the query
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            cursor = conx.cursor()
+            # extract data from executed query
+            records = cursor.execute(query).fetchall()
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+            selection = df[['Title', 'Author', 'Read_Yet']]
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Look upon my Library!')
+            print('*' * 20)
+            print(selection)
+
+    def sendCountQuery(query):
+        """
+            sendCountQuery() creates a connection string and creates a dataframe.
+            It then displays a count of books in the library from the dataframe.
+        """
+        # Contact the db and make the query
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            # Create a cursor object
+            cursor = conx.cursor()
+            # extract data from executed query
+            records = cursor.execute(query).fetchall()
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+            ScreenTools.screen_clear()
+            num_rows = df.shape[0]
+            print('*' * 20)
+            print(f"The library currently has {num_rows} books.")
+            print('*' * 20)
+            print()
+
+    def sendMarkQuery(isbn):
+        """
+            sendInsertQuery() creates a connection string and connects to SQL Server then
+            the insert query is executed. A confirmation prints as well as the row created in the table.
+        """
+        # Contact the db and make the query
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            # Create a cursor object
+            cursor = conx.cursor()
+            # Create new query for creation of printed check
+            checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+            # fetch data 
+            records = cursor.execute(checking_query).fetchall()
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Is this the book you wish to mark?')
+            print('*' * 20)
+            # Print the new row
+            filt = (df['ISBN'] == isbn)
+            new_df = df.loc[filt]
+            print(new_df[['Title', 'Author', 'Read_Yet']])
+            print()
+            user_input = input()
+            if user_input in Chooser.sayYay:
+                mark_read = 1
+                cursor.execute("UPDATE [PersonalLibrary].[dbo].[BookShelf] SET [Read_Yet] = ? WHERE [ISBN] = ?", mark_read, isbn)
+                cursor.commit()
+                checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+                # fetch data 
+                records = cursor.execute(checking_query).fetchall()
+                # Define column names
+                columns = [column[0] for column in cursor.description]
+                # Dump the data into a dataframe
+                df = pd.DataFrame.from_records(
+                    data=records,
+                    columns=columns
+                )
+                filt = (df['ISBN'] == isbn)
+                new_df = df.loc[filt]
+                print()
+                print('*' * 20)
+                print('Here are the results:')
+                print('*' * 20)
+                print(new_df[['Title', 'Author', 'Read_Yet']])
+                print()
+                print('*' * 20)
+                print('Would you like to mark another book?')
+                print('*' * 20)
+                user_input = input()
+                if user_input in Chooser.sayYay:
+                    MainMenu.markBook()
+                elif user_input in Chooser.sayNay:
+                    MainMenu.startMenu()
+
+    def viewBookControl(_):
+        """
+            Controls the sql query requierd to view the entire library or count the total of books. Creates a connection
+        """
         
-
-    def viewBookControl():
-        """
-            Controls the sql query requierd to view the entire library.
-        """
-        query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
-
-        DBcontrol.sendQuery(query)
+        query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]" 
+        
+        # User wants to see all books.
+        if _ == 1:
+            DBcontrol.sendFullQuery(query)
+        # User wants to see a count of books.
+        elif _ == 2:
+            DBcontrol.sendCountQuery(query)
 
         # Allow the user to continue.
-        print("Would you like to continue further?")
+        print('*' * 20)
+        print('Would you like to continue?')
+        print('*' * 20)
         user_input = input()
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
             ScreenTools.running = False
-
+            
     def unreadBookControl():
         """
             Controls the sql query requierd to view all unread books in the db.
@@ -582,43 +711,6 @@ class DBcontrol:
         # params = list(tuple(row) for row in data_values.values)
 
         DBcontrol.sendInsertQuery(query_book_table, data_values, isbn)
-
-    def markBook():
-        """
-            This function will mark a book as read.
-        """
-        ScreenTools.screen_clear()
-        print('*' * 20)
-        print('Another book bites the dust!\nLets mark it down!')
-        print('*' * 20)
-        print("Would you like to continue further?")
-        print()
-        user_input = input()
-        if user_input in Chooser.sayYay:
-            ScreenTools.screen_clear()
-            print('*' * 40)
-            print('What is the isbn of the book you would like to mark as read?')
-            print('*' * 40)
-            print()
-            isbn = input()
-            print(f"The ISBN you entered was:\n{isbn}")
-            print("Was this correct?")
-            if user_input in Chooser.sayYay:
-                # Query must be redefined before runtime.
-                # Mutliple queries might need to be run.
-                query = f"UPDATE WHERE {isbn} INTO PersonalLibrary" 
-
-                DBcontrol.sendQuery(query)
-
-                # Second query will display the books information.
-                query = "SELECT * FROM Database"
-
-                DBcontrol.sendQuery(query)
-
-            elif user_input in Chooser.sayNay:
-                DBcontrol.markBook()
-        elif user_input in Chooser.sayNay:
-            MainMenu.queryMenu()
 
     def deleteBook():
         """
