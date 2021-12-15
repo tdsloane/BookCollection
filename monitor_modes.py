@@ -271,10 +271,10 @@ class DBcontrol:
         database = DATABASE_NAME
     )
 
-    def sendInsertQuery(query, listed_data):
+    def sendInsertQuery(query, listed_data, isbn):
         """
             sendQuery() creates a connection string and connects to SQL Server.
-            The query is then executed and a pandas table is printed to verify before commiting.
+            The query is then executed. A confirmation prints as well as the row created in the table.
         """
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
@@ -282,6 +282,8 @@ class DBcontrol:
             cursor.execute(query, listed_data)
             # Commit changes | commented out for testing
             cursor.commit()
+            print("Insert Commited")
+            print()
 
             # Create new query for creation of printed check
             checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
@@ -289,20 +291,20 @@ class DBcontrol:
             records = cursor.execute(checking_query).fetchall()
             # Define column names
             columns = [column[0] for column in cursor.description]
-
             # Dump the data into a dataframe
             df = pd.DataFrame.from_records(
                 data=records,
                 columns=columns
             )
 
-            # Select the row belonging to the new values
-            isbn = (df['ISBN'] == listed_data[0])
-
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Book has been added!')
+            print('*' * 20)
             # Print the new row
-            print(df.loc[isbn])
-
-            
+            filt = (df['ISBN'] == int(isbn))
+            print(df.loc[filt])
+            print()
         
 
     def viewBookControl():
@@ -456,7 +458,7 @@ class DBcontrol:
             print()
 
             print('*' * 20)
-            print('How many pages is the book?')
+            print('How many pages are in the book?')
             print('*' * 20)
             print()
             pages = input()
@@ -525,13 +527,16 @@ class DBcontrol:
         elif user_input in Chooser.sayNay:
             MainMenu.startMenu()
 
-            # Allow the user to continue.
-        print("Would you like to continue further?")
+        # Allow the user to continue.
+        print('*' * 20)
+        print('Would you like to continue adding books?')
+        print('*' * 20)
+        print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
+            DBcontrol.askBookInfo()
         elif user_input in Chooser.sayNay:
-            ScreenTools.running = False
+            MainMenu.startMenu()
 
     def addToBookTable(isbn, title, author, genre, lang, pages, read_yet, pub, collection_name, pub_year):
         """
@@ -576,7 +581,7 @@ class DBcontrol:
 
         # params = list(tuple(row) for row in data_values.values)
 
-        DBcontrol.sendInsertQuery(query_book_table, data_values)
+        DBcontrol.sendInsertQuery(query_book_table, data_values, isbn)
 
     def markBook():
         """
