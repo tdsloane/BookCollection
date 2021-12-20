@@ -17,7 +17,7 @@ class MainMenu:
         ScreenTools.screen_clear()
         print()
         print('*' * 20)
-        print('Welcome to the\nGiioke Book System!')
+        print('Welcome to the\nSloane Book System!')
         print('*' * 20)
         sleep(5)
         ScreenTools.screen_clear()
