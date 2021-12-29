@@ -1,6 +1,7 @@
 # TO DO:
 
-    - Complete functionality of query options (view read, view unread, custom query)
+    - Complete functionality of query options (custom query)
+    - Learn how to clear the query after display of results.
     - Complete functionality of the delete a book option.
     - Pretty it up!!
     - Research connecting to db from another computer (might just be local)

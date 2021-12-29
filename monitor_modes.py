@@ -70,22 +70,6 @@ class MainMenu:
         user_input = int(input())
         Chooser.queryChooser(user_input)
 
-    def addBook():
-        """
-            This function uses an insert statement to add a book to the db.
-        """
-        ScreenTools.screen_clear()
-        print('*' * 20)
-        print("So, you want to add a book to the list?")
-        print("Say yes or no.")
-        print('*' * 20)
-        print()
-        user_input = input()
-        if user_input in Chooser.sayNay:
-            MainMenu.queryMenu()
-        elif user_input in Chooser.sayYay:
-            DBcontrol.askBookInfo()
-
 
     def markBook():
         """
@@ -128,99 +112,6 @@ class MainMenu:
             # This is where we will delete a book.
             pass
 
-
-class QueryMenu:
-
-    def viewBooks():
-        ScreenTools.screen_clear()
-        # Offer a look at the list
-        print('*' * 20)
-        print('Would you like to see the list of all books?\nYes or No?')
-        print('*' * 20)
-        user_input = input()
-
-        # If not, then offer a count
-        if user_input in Chooser.sayNay:
-            print('*' * 20)
-            print('Would you like a total count of all books?\nYes or No?')
-            print('*' * 20)
-            user_input = input()
-
-            if user_input in Chooser.sayNay:
-                MainMenu.startMenu()
-            # Access db
-            elif user_input in Chooser.sayYay:
-                _ = 2
-                DBcontrol.viewBookControl(_)
-            elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewBooks()
-        elif user_input in Chooser.sayYay:
-            _ = 1
-            DBcontrol.viewBookControl(_)
-        elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewBooks()
-
-    def viewUnreadBooks():
-        ScreenTools.screen_clear()
-        
-        # Offer a look at the list
-        print('*' * 20)
-        print('Would you like to see the list of unread books?\nYes or No?')
-        print('*' * 20)
-        user_input = input()
-
-        # If not, then offer a count
-        if user_input in Chooser.sayNay:
-            print('*' * 20)
-            print('Would you like a total count of unread books?\nYes or No?')
-            print('*' * 20)
-            user_input = input()
-            if user_input in Chooser.sayNay:
-                MainMenu.startMenu()
-            # Access db
-            elif user_input in Chooser.sayYay:
-                DBcontrol.unreadBookControl()
-
-        # Content Checks for user input
-            elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewUnreadBooks()   
-        elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewUnreadBooks()
-
-    def viewReadBooks():
-        ScreenTools.screen_clear()
-        
-        # Offer a look at the list
-        print('*' * 20)
-        print('Would you like to see the list of read books?\nYes or No?')
-        print('*' * 20)
-        user_input = input()
-
-        # If not, then offer a count
-        if user_input in Chooser.sayNay:
-            print('*' * 20)
-            print('Would you like a total count of books read?\nYes or No?')
-            print('*' * 20)
-            user_input = input()
-            if user_input in Chooser.sayNay:
-                MainMenu.startMenu()
-            # Access db
-            elif user_input in Chooser.sayYay:
-                DBcontrol.readBookControl()
-
-        # Content Checks for user input
-            elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewReadBooks()     
-        elif user_input not in (Chooser.sayYay + Chooser.sayNay):
-                print("Please answer yes or no.")
-                QueryMenu.viewReadBooks()
-
-
 class Chooser:
     """
         This class houses chooser functions to aid navigation.
@@ -235,7 +126,7 @@ class Chooser:
         if _ == 1:
             MainMenu.queryMenu()
         elif _ == 2:
-            MainMenu.addBook()
+            DBcontrol.addBookControl()
         elif _ == 3:
             MainMenu.markBook()
         elif _ == 4:
@@ -252,17 +143,66 @@ class Chooser:
             This function is a hub for choices on the query menu.
         """
         if _ == 1:
-            QueryMenu.viewUnreadBooks()
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Tell me what you want to see!')
+            print('*' * 20)
+            print()
+            print('* View a list of unread books:\n* Press 1')
+            print()
+            print('* View a count of unread books:\n* Press 2')
+            print()
+            user_input = int(input())
+
+            DBcontrol.unreadBookControl(user_input)
+
         elif _ == 2:
-            QueryMenu.viewReadBooks()
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('Tell me what you want to see!')
+            print('*' * 20)
+            print()
+            print('* View a list of all read books:\n* Press 1')
+            print()
+            print('* View a count of all read books:\n* Press 2')
+            print()
+            user_input = int(input())
+
+            DBcontrol.readBookControl(user_input)
+
         elif _ == 3:
-            QueryMenu.viewBooks()
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('What do you want to view?')
+            print('*' * 20)
+            print()
+            print('* View a list of all books:\n* Press 1')
+            print()
+            print('* View a count of all books:\n* Press 2')
+            print()
+            user_input = int(input())
+
+            DBcontrol.viewBookControl(user_input)
+
         elif _ == 4:
-            # Begin a custom query on the db
-            pass
+            ScreenTools.screen_clear()
+            print('*' * 20)
+            print('What do you want to view?')
+            print('*' * 20)
+            print()
+            print('* View a list of all books:\n* Press 1')
+            print()
+            print('* View a count of all books:\n* Press 2')
+            print()
+            user_input = int(input())
+
+            DBcontrol.customQueryControl(user_input)
 
 
 class DBcontrol:
+    """
+        All Functions within this class have access to the database to send and retrieve queries.
+    """
 
     # Connection string components
     DRIVER = '{ODBC Driver 17 for SQL Server}'
@@ -322,6 +262,7 @@ class DBcontrol:
             It then displays the entire library from the dataframe.
         """
         pd.set_option('display.max_rows', 500)
+        print("Display Settings Activated")
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
             cursor = conx.cursor()
@@ -334,12 +275,14 @@ class DBcontrol:
                 data=records,
                 columns=columns
             )
-            selection = df[['Title', 'Author', 'Read_Yet']]
             ScreenTools.screen_clear()
+            selection = df[['Title', 'Author', 'Read_Yet']]
             print('*' * 20)
             print('Look upon my Library!')
             print('*' * 20)
             print(selection)
+            print()
+
 
     def sendCountQuery(query):
         """
@@ -442,6 +385,29 @@ class DBcontrol:
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
 
+        # # Allow the user to continue.
+        # print('*' * 20)
+        # print('Would you like to continue?')
+        # print('*' * 20)
+        # user_input = input()
+        # if user_input in Chooser.sayYay:
+        #     MainMenu.startMenu()
+        # elif user_input in Chooser.sayNay:
+        #     ScreenTools.running = False
+            
+    def unreadBookControl(_):
+        """
+            Controls the sql query requierd to view all unread books in the db.
+        """
+        query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE [Read_Yet] = 0" 
+        
+        # User wants to see all books.
+        if _ == 1:
+            DBcontrol.sendFullQuery(query)
+        # User wants to see a count of books.
+        elif _ == 2:
+            DBcontrol.sendCountQuery(query)
+
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to continue?')
@@ -451,102 +417,42 @@ class DBcontrol:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
             ScreenTools.running = False
-            
-    def unreadBookControl():
-        """
-            Controls the sql query requierd to view all unread books in the db.
-        """
-        query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
 
-        DBcontrol.sendQuery(query)
+    def readBookControl(_):
+        """
+            Controls the sql query requierd to view all read books in the db.
+        """
+        query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE [Read_Yet] = 1" 
+        
+        # User wants to see all books.
+        if _ == 1:
+            DBcontrol.sendFullQuery(query)
+        # User wants to see a count of books.
+        elif _ == 2:
+            DBcontrol.sendCountQuery(query)
 
         # Allow the user to continue.
-        print("Would you like to continue further?")
+        print('*' * 20)
+        print('Would you like to continue?')
+        print('*' * 20)
         user_input = input()
         if user_input in Chooser.sayYay:
             MainMenu.startMenu()
         elif user_input in Chooser.sayNay:
             ScreenTools.running = False
 
-    def readBookControl():
-        """
-            Controls the sql query requierd to view a list of all books read.
-        """
-        query = "SELECT Title, Author, Genre, Read FROM PersonalLibrary" # Query must be redefined before runtime.
-
-        DBcontrol.sendQuery(query)
-
-        # Allow the user to continue.
-        print("Would you like to continue further?")
-        user_input = input()
-        if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
-        elif user_input in Chooser.sayNay:
-            ScreenTools.running = False
-
-        """
-            This function asks the user for information about the publisher they want to add.
-        """
-        ScreenTools.screen_clear()
-        print('*' * 20)
-        print('Adding a Publisher')
-        print('*' * 20)
-        print("Would you like to continue further?")
-        print("I will need to ask you a series of questions to continue.")
-        print()
-        user_input = input()
-
-        if user_input in Chooser.sayYay:
-            ScreenTools.screen_clear()
-            
-            print('*' * 20)
-            print('Who is the Publisher?')
-            print('*' * 20)
-            print()
-            pub = input()
-            print()
-
-            print('*' * 20)
-            print('Where are they located?')
-            print('*' * 20)
-            print()
-            pub_loc = input()
-            print()
-
-            
-            sleep(2)
-            ScreenTools.screen_clear()
-            print()
-            print('*' * 20)
-            print('Here is what you have registered.\nIs this correct? ')
-            print('*' * 20)
-            print()
-            
-            print(f"Publisher: {pub}\nLocation: {pub_loc}")
-            print()
-            print('*' * 20)
-
-            user_input = input("Is this information correct?\nPlease say yes or no.\n")
-            if user_input in Chooser.sayYay:
-                # Send it out!
-                DBcontrol.addToPublisherTable(pub, pub_loc)
-            # Send them back if not correct.
-            elif user_input in Chooser.sayNay:
-                DBcontrol.askPublisherInfo()
-
-    def askBookInfo():
+    def addBookControl():
         """
             This function asks the user for information about the book they want to add.
         """
         ScreenTools.screen_clear()
         print('*' * 20)
-        print('Adding a Book')
+        print("I will need to ask ten questions.")
+        print("This may take a while, would you like to continue?")
+        print("Say yes or no.")
         print('*' * 20)
-        print("Would you like to continue further?")
-        print("I will need to ask you a series of questions to continue.")
         print()
         user_input = input()
-
         if user_input in Chooser.sayYay:
             ScreenTools.screen_clear()
             print('*' * 20)
@@ -651,7 +557,7 @@ class DBcontrol:
                 DBcontrol.addToBookTable(isbn, title, author, genre, lang, pages, read_yet, pub, collection_name, pub_year)
             # Send them back if not correct.
             elif user_input in Chooser.sayNay:
-                DBcontrol.askBookInfo()
+                DBcontrol.addBookControl()
 
         elif user_input in Chooser.sayNay:
             MainMenu.startMenu()
@@ -712,7 +618,7 @@ class DBcontrol:
 
         DBcontrol.sendInsertQuery(query_book_table, data_values, isbn)
 
-    def deleteBook():
+    def deleteBook(_):
         """
             This function will remove a book from the db.
         """
@@ -748,3 +654,6 @@ class DBcontrol:
                 DBcontrol.markBook()
         elif user_input in Chooser.sayNay:
             MainMenu.queryMenu()
+
+    def customQueryControl(_):
+        pass
