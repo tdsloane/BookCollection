@@ -19,7 +19,7 @@ class MainMenu:
         print('*' * 20)
         print('Welcome to the\nSloane Book System!')
         print('*' * 20)
-        sleep(5)
+        sleep(2)
         ScreenTools.screen_clear()
 
         print('*' * 20)
@@ -94,23 +94,7 @@ class MainMenu:
             user_input = int(input())
             DBcontrol.sendMarkQuery(user_input)
 
-
-    def deleteBook():
-        """
-            This function uses an delete statement to remove a book from the db.
-        """
-        ScreenTools.screen_clear()
-        print('*' * 20)
-        print("So, you want to remove a book?")
-        print("Say yes or no.")
-        print('*' * 20)
-        print()
-        user_input = input()
-        if user_input in Chooser.sayNay:
-            MainMenu.queryMenu()
-        elif user_input in Chooser.sayYay:
-            # This is where we will delete a book.
-            pass
+        
 
 class Chooser:
     """
@@ -130,7 +114,7 @@ class Chooser:
         elif _ == 3:
             MainMenu.markBook()
         elif _ == 4:
-            MainMenu.deleteBook()
+            DBcontrol.deleteBook()
         elif _ == 5:
             ScreenTools.screen_clear()
             print('*' * 20)
@@ -385,15 +369,15 @@ class DBcontrol:
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
 
-        # # Allow the user to continue.
-        # print('*' * 20)
-        # print('Would you like to continue?')
-        # print('*' * 20)
-        # user_input = input()
-        # if user_input in Chooser.sayYay:
-        #     MainMenu.startMenu()
-        # elif user_input in Chooser.sayNay:
-        #     ScreenTools.running = False
+        # Allow the user to continue.
+        print('*' * 20)
+        print('Would you like to continue?')
+        print('*' * 20)
+        user_input = input()
+        if user_input in Chooser.sayYay:
+            MainMenu.startMenu()
+        elif user_input in Chooser.sayNay:
+            ScreenTools.running = False
             
     def unreadBookControl(_):
         """
@@ -618,42 +602,63 @@ class DBcontrol:
 
         DBcontrol.sendInsertQuery(query_book_table, data_values, isbn)
 
-    def deleteBook(_):
+    def deleteBook():
         """
             This function will remove a book from the db.
         """
+    
         ScreenTools.screen_clear()
         print('*' * 20)
-        print('Removing a Book')
+        print("So, you want to remove a book?")
+        print("Say yes or no.")
         print('*' * 20)
-        print("Would you like to continue further?")
         print()
         user_input = input()
-        if user_input in Chooser.sayYay:
+        if user_input in Chooser.sayNay:
+            MainMenu.queryMenu()
+        elif user_input in Chooser.sayYay:
             ScreenTools.screen_clear()
             print('*' * 40)
             print('What is the isbn of the book you would like to remove?')
             print('*' * 40)
             print()
             isbn = input()
-            print(f"The ISBN you entered was:\n{isbn}")
-            print("Was this correct?")
-            if user_input in Chooser.sayYay:
-                # Query must be redefined before runtime.
-                # Mutliple queries might need to be run.
-                query = f"DELETE WHERE {isbn} INTO PersonalLibrary" 
 
-                DBcontrol.sendQuery(query)
+            with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+                cursor = conx.cursor()
+                # Create new query for creation of printed check
+                checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+                # fetch data 
+                records = cursor.execute(checking_query).fetchall()
+                # Define column names
+                columns = [column[0] for column in cursor.description]
+                # Dump the data into a dataframe
+                df = pd.DataFrame.from_records(
+                    data=records,
+                    columns=columns
+                )
 
-                # Second query will display the books information.
-                query = "SELECT * FROM Database"
+                filt = (df['ISBN'] == int(isbn))
+                print(df.loc[filt])
+                print()
+                print('*' * 20)
+                print("Is this the book you wish to remove?")
+                print('*' * 20)
+                print()
+                user_input = input()
+                if user_input in Chooser.sayYay:
+                    # Query must be redefined before runtime.
+                    # Mutliple queries might need to be run.
+                    delete_query = f"DELETE FROM [PersonalLibrary].[dbo].[BookShelf] WHERE [ISBN] = {isbn}"
+                    cursor.execute(delete_query)
+                    cursor.commit()
+                    ScreenTools.screen_clear()
+                    print('*' * 20)
+                    print("Book removed from list.")
+                    print('*' * 20)
+                elif user_input in Chooser.sayNay:
+                    DBcontrol.deleteBook()
 
-                DBcontrol.sendQuery(query)
-
-            elif user_input in Chooser.sayNay:
-                DBcontrol.markBook()
-        elif user_input in Chooser.sayNay:
-            MainMenu.queryMenu()
 
     def customQueryControl(_):
         pass
