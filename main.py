@@ -1,5 +1,4 @@
-import os
-from screen_tools import ScreenTools
+from screen_tools import Tools
 from monitor_modes import MainMenu
 
 """
@@ -12,13 +11,13 @@ from monitor_modes import MainMenu
 class LibStart:
 
     def mainLoop(running):
-        while ScreenTools.running:
+        while Tools.running:
 
             # Main Menu: Choose from options to branch from.
             MainMenu.startMenu()
             
             # End Program
-            ScreenTools.running = False
+            Tools.running = False
 
 # Launch
-LibStart.mainLoop(ScreenTools.running)
+LibStart.mainLoop(Tools.running)

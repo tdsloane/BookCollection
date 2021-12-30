@@ -4,7 +4,7 @@
 import os
 
 
-class ScreenTools:
+class Tools:
 
     running = True
 
@@ -14,3 +14,9 @@ class ScreenTools:
         """
         if os.name == 'nt':
             _ = os.system('cls')
+
+
+class Guard:
+
+    alpha = 'abcdefghijklmnopqrstuvwxyz'
+    num = '0123456789'
