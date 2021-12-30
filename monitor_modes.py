@@ -6,7 +6,7 @@ from os import altsep
 import pyodbc
 import pandas as pd
 from time import sleep
-from screen_tools import Guard, Tools
+from screen_tools import Tools
 
 
 class MainMenu:
@@ -37,18 +37,21 @@ class MainMenu:
         print()
         print('* To Quit:\n* Press 5')
         print()
-        user_input = int(input())
         try:
-            if user_input > 5 or user_input in Guard.alpha:
-                print("Please enter a number 1-5")
-                sleep(2)
-                MainMenu.startMenu()
-        except ValueError as e:
-            print(f"{e} Please enter a number 1-5.")
-            sleep(2)
+            user_input = int(input())
+            if user_input < 6:
+                Chooser.mainChooser(user_input) 
+            else:
+                raise ValueError
+        except ValueError:
+            Tools.screen_clear()
+            print('*' * 20)
+            print("Please enter a number 1-5.")
+            print('*' * 20)
+            sleep(3)
             MainMenu.startMenu()
         
-        Chooser.mainChooser(user_input) 
+        
 
 
     def queryMenu():
@@ -68,17 +71,20 @@ class MainMenu:
         print()
         print('* To create a custom query:\n* Press 4')
         print()
-        user_input = int(input())
         try:
-            if user_input > 4 or user_input in Guard.alpha:
-                print("Please enter a number 1-4")
-                sleep(2)
-                MainMenu.startMenu()
-        except ValueError as e:
-            print(f"{e} Please enter a number 1-4.")
-            sleep(2)
-            MainMenu.startMenu()
-        Chooser.queryChooser(user_input)
+            user_input = int(input())
+            if user_input < 5:
+                Chooser.queryChooser(user_input)
+            else:
+                raise ValueError
+        except ValueError:
+            Tools.screen_clear()
+            print('*' * 20)
+            print("Please enter a number 1-5.")
+            print('*' * 20)
+            sleep(3)
+            MainMenu.queryMenu()
+        
 
 
     def markBook():
@@ -91,19 +97,28 @@ class MainMenu:
         print("Say yes or no.")
         print('*' * 20)
         print()
-        user_input = input()
-        if user_input in Chooser.sayNay:
-            MainMenu.queryMenu()
-        elif user_input in Chooser.sayYay:
+        try:
+            user_input = str(input())
+            if user_input in Chooser.sayNay:
+                MainMenu.queryMenu()
+            elif user_input in Chooser.sayYay:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Congradulations!!")
+                print("Please enter the ISBN of the book you read.")
+                print('*' * 20)
+                print()
+                user_input = int(input())
+                DBcontrol.sendMarkQuery(user_input)
+            else:
+                raise ValueError
+        except ValueError:
             Tools.screen_clear()
             print('*' * 20)
-            print("Congradulations!!")
-            print("Please enter the ISBN of the book you read.")
+            print("Please enter yes or no.")
             print('*' * 20)
-            print()
-            user_input = int(input())
-            DBcontrol.sendMarkQuery(user_input)
-
+            sleep(3)
+            MainMenu.startMenu()
         
 
 class Chooser:
@@ -146,18 +161,21 @@ class Chooser:
             print()
             print('* View a count of unread books:\n* Press 2')
             print()
-            user_input = int(input())
             try:
-                if user_input > 2 or user_input in Guard.alpha:
-                    print("Please enter a number 1-2")
-                    sleep(2)
-                    MainMenu.startMenu()
-            except ValueError as e:
-                print(f"{e} Please enter a number 1-2.")
-                sleep(2)
-                MainMenu.startMenu()
+                user_input = int(input())
+                if user_input < 3:
+                    DBcontrol.unreadBookControl(user_input)
+                else:
+                    raise ValueError
+            except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter a number 1-2.")
+                print('*' * 20)
+                sleep(3)
+                Chooser.queryChooser(1)
 
-            DBcontrol.unreadBookControl(user_input)
+            
 
         elif _ == 2:
             Tools.screen_clear()
@@ -169,18 +187,22 @@ class Chooser:
             print()
             print('* View a count of all read books:\n* Press 2')
             print()
-            user_input = int(input())
+            
             try:
-                if user_input > 2 or user_input in Guard.alpha:
-                    print("Please enter a number 1-2")
-                    sleep(2)
-                    MainMenu.startMenu()
-            except ValueError as e:
-                print(f"{e} Please enter a number 1-2.")
-                sleep(2)
-                MainMenu.startMenu()
+                user_input = int(input())
+                if user_input < 3:
+                    DBcontrol.readBookControl(user_input)
+                else:
+                    raise ValueError
+            except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter a number 1-2.")
+                print('*' * 20)
+                sleep(3)
+                Chooser.queryChooser(2)
 
-            DBcontrol.readBookControl(user_input)
+            
 
         elif _ == 3:
             Tools.screen_clear()
@@ -192,18 +214,21 @@ class Chooser:
             print()
             print('* View a count of all books:\n* Press 2')
             print()
-            user_input = int(input())
             try:
-                if user_input > 2 or user_input in Guard.alpha:
-                    print("Please enter a number 1-2")
-                    sleep(2)
-                    MainMenu.startMenu()
-            except ValueError as e:
-                print(f"{e} Please enter a number 1-2.")
-                sleep(2)
-                MainMenu.startMenu()
+                user_input = int(input())
+                if user_input < 3:
+                    DBcontrol.viewBookControl(user_input)
+                else:
+                    raise ValueError
+            except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter a number 1-2.")
+                print('*' * 20)
+                sleep(3)
+                Chooser.queryChooser(3)
 
-            DBcontrol.viewBookControl(user_input)
+            
 
         elif _ == 4:
             Tools.screen_clear()
@@ -359,8 +384,8 @@ class DBcontrol:
             new_df = df.loc[filt]
             print(new_df[['Title', 'Author', 'Read_Yet']])
             print()
-            user_input = input()
             try:
+                user_input = str(input())
                 if user_input in Chooser.sayYay:
                     mark_read = 1
                     cursor.execute("UPDATE [PersonalLibrary].[dbo].[BookShelf] SET [Read_Yet] = ? WHERE [ISBN] = ?", mark_read, isbn)
@@ -386,20 +411,28 @@ class DBcontrol:
                     print('*' * 20)
                     print('Would you like to mark another book?')
                     print('*' * 20)
-                    user_input = input()
                     try:
+                        user_input = str(input())
                         if user_input in Chooser.sayYay:
                             MainMenu.markBook()
                         elif user_input in Chooser.sayNay:
                             MainMenu.startMenu()
-                    except ValueError as e:
-                        print(f"{e} Please enter a yes or no.")
-                        sleep(2)
+                        else:
+                            raise ValueError
+                    except ValueError:
+                        Tools.screen_clear()
+                        print('*' * 20)
+                        print("Please enter yes or no.")
+                        print('*' * 20)
+                        sleep(3)
                         MainMenu.startMenu()
-            except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
-                MainMenu.startMenu()
+            except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
+                MainMenu.markBook()
 
     def viewBookControl(_):
         """
@@ -419,15 +452,20 @@ class DBcontrol:
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 Tools.running = False
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+            else:
+                raise ValueError
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
             
     def unreadBookControl(_):
@@ -447,15 +485,20 @@ class DBcontrol:
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 Tools.running = False
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+            else:
+                raise ValueError
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
 
     def readBookControl(_):
@@ -475,15 +518,20 @@ class DBcontrol:
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 Tools.running = False
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+            else:
+                raise ValueError
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
 
     def addBookControl():
@@ -497,15 +545,23 @@ class DBcontrol:
         print("Say yes or no.")
         print('*' * 20)
         print()
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 Tools.screen_clear()
                 print('*' * 20)
                 print('What is the ISBN?')
                 print('*' * 20)
                 print()
-                isbn = input()
+                try:
+                    isbn = int(input())
+                except ValueError:
+                    Tools.screen_clear()
+                    print('*' * 20)
+                    print("ISBN must consist of integers.")
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
@@ -520,6 +576,12 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 author = input()
+                if len(author) > 50:
+                    print('*' * 20)
+                    print('Try again...\nAuthor cannot be more than 50 characters long.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
@@ -527,6 +589,12 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 genre = input()
+                if len(genre) > 50:
+                    print('*' * 20)
+                    print('Try again...\nGenre cannot be more than 50 characters long.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
                 
                 Tools.screen_clear()
@@ -536,13 +604,32 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 lang = input()
+                if len(lang) > 50:
+                    print('*' * 20)
+                    print('Try again...\nLanguage cannot be more than 50 characters long.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
+                elif int(lang) or float(lang):
+                    print('*' * 20)
+                    print('Try again...\nLanguage cannot contain numbers.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
                 print('How many pages are in the book?')
                 print('*' * 20)
                 print()
-                pages = input()
+                try:
+                    pages = int(input())
+                except ValueError:
+                    print('*' * 20)
+                    print('Try again...\nEnter the NUMBER of pages.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
@@ -550,13 +637,26 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 pub = input()
+                if len(pub) > 50:
+                    print('*' * 20)
+                    print('Try again...\nPublisher cannot be more than 50 characters long.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
                 print('What year was it published?')
                 print('*' * 20)
                 print()
-                pub_year = input()
+                try:
+                    pub_year = int(input())
+                except ValueError:
+                    print('*' * 20)
+                    print('Try again...\nYear of publication should be integers.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
                 print()
 
                 print('*' * 20)
@@ -564,15 +664,28 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 user_input = input()
-                if user_input in Chooser.sayYay:
-                    print()
+                try:
+                    if user_input in Chooser.sayYay:
+                        print()
+                        print('*' * 20)
+                        print('Which collection?')
+                        print('*' * 20)
+                        print()
+                        collection_name = input()
+                        if len(collection_name) > 50:
+                            print('*' * 20)
+                            print('Try again...\nThe Collection Name cannot be more than 50 characters long.')
+                            print('*' * 20)
+                            sleep(5)
+                            DBcontrol.addBookControl()
+                    elif user_input in Chooser.sayNay:
+                        collection_name = ''
+                except ValueError:
                     print('*' * 20)
-                    print('Which collection?')
+                    print('Try again...\nPlease say Yes or No.')
                     print('*' * 20)
-                    print()
-                    collection_name = input()
-                elif user_input in Chooser.sayNay:
-                    collection_name = ''
+                    sleep(5)
+                    DBcontrol.addBookControl()
 
                 print()
                 print('*' * 20)
@@ -580,10 +693,17 @@ class DBcontrol:
                 print('*' * 20)
                 print()
                 user_input = input()
-                if user_input in Chooser.sayYay:
-                    read_yet = 1
-                elif user_input in Chooser.sayNay:
-                    read_yet = 0
+                try:
+                    if user_input in Chooser.sayYay:
+                        read_yet = 1
+                    elif user_input in Chooser.sayNay:
+                        read_yet = 0
+                except Exception:
+                    print('*' * 20)
+                    print('Try again...\nPlease say Yes or No.')
+                    print('*' * 20)
+                    sleep(5)
+                    DBcontrol.addBookControl()
 
                 sleep(2)
                 Tools.screen_clear()
@@ -596,26 +716,34 @@ class DBcontrol:
                 print(f"ISBN: {isbn}\nTitle: {title}\nAuthor: {author}\nGenre: {genre}\nLanguage: {lang}\nPages: {pages}\nRead: {read_yet}\nPublisher: {pub}\nCollection: {collection_name}\nYear Published: {pub_year}")
                 print()
                 print('*' * 20)
-
                 user_input = input("Is this information correct?\nPlease say yes or no.\n")
                 try:
+                    user_input = str(user_input)
                     if user_input in Chooser.sayYay:
                         # Send it out!
                         DBcontrol.addToBookTable(isbn, title, author, genre, lang, pages, read_yet, pub, collection_name, pub_year)
                     # Send them back if not correct.
                     elif user_input in Chooser.sayNay:
                         DBcontrol.addBookControl()
-                except ValueError as e:
-                    print(f"{e} Please enter a yes or no.")
-                    sleep(2)
-                    MainMenu.startMenu()
+                    else:
+                        raise ValueError
+                except ValueError:
+                    Tools.screen_clear()
+                    print('*' * 20)
+                    print("Please enter yes or no.")
+                    print('*' * 20)
+                    sleep(3)
+                    DBcontrol.addBookControl()
 
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
 
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
 
         # Allow the user to continue.
@@ -623,15 +751,20 @@ class DBcontrol:
         print('Would you like to continue adding books?')
         print('*' * 20)
         print()
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 DBcontrol.addBookControl()
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+            else:
+                raise ValueError
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
 
     def addToBookTable(isbn, title, author, genre, lang, pages, read_yet, pub, collection_name, pub_year):
@@ -690,8 +823,8 @@ class DBcontrol:
         print("Say yes or no.")
         print('*' * 20)
         print()
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayNay:
                 MainMenu.queryMenu()
             elif user_input in Chooser.sayYay:
@@ -700,9 +833,8 @@ class DBcontrol:
                 print('What is the isbn of the book you would like to remove?')
                 print('*' * 40)
                 print()
-                isbn = input()
-                if isbn in Guard.num:
-
+                try:
+                    isbn = int(input())
                     with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
                         cursor = conx.cursor()
                         # Create new query for creation of printed check
@@ -724,8 +856,8 @@ class DBcontrol:
                         print("Is this the book you wish to remove?")
                         print('*' * 20)
                         print()
-                        user_input = input()
                         try:
+                            user_input = str(input())
                             if user_input in Chooser.sayYay:
                                 # Query must be redefined before runtime.
                                 # Mutliple queries might need to be run.
@@ -738,19 +870,31 @@ class DBcontrol:
                                 print('*' * 20)
                             elif user_input in Chooser.sayNay:
                                 DBcontrol.deleteBook()
-                        except ValueError as e:
-                            print(f"{e} Please enter a yes or no.")
-                            sleep(2)
+                            else:
+                                raise ValueError
+                        except ValueError:
+                            Tools.screen_clear()
+                            print('*' * 20)
+                            print("Please enter yes or no.")
+                            print('*' * 20)
+                            sleep(3)
                             MainMenu.startMenu()
 
-                elif isbn in Guard.alpha:
-                    print("ISBN is a number. Please enter the integer isbn of the book.")
-                    sleep(2)
+                except ValueError:
+                    Tools.screen_clear()
+                    print('*' * 20)
+                    print("ISBN must consist of integers only.")
+                    print('*' * 20)
+                    sleep(3)
                     DBcontrol.deleteBook()
+                
 
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()
 
 
@@ -784,13 +928,18 @@ class DBcontrol:
         print('Would you like to enter another query?')
         print('*' * 20)
         print()
-        user_input = input()
         try:
+            user_input = str(input())
             if user_input in Chooser.sayYay:
                 Chooser.queryChooser(4)
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-        except ValueError as e:
-                print(f"{e} Please enter a yes or no.")
-                sleep(2)
+            else:
+                raise ValueError
+        except ValueError:
+                Tools.screen_clear()
+                print('*' * 20)
+                print("Please enter yes or no.")
+                print('*' * 20)
+                sleep(3)
                 MainMenu.startMenu()

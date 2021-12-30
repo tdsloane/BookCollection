@@ -16,7 +16,4 @@ class Tools:
             _ = os.system('cls')
 
 
-class Guard:
 
-    alpha = 'abcdefghijklmnopqrstuvwxyz'
-    num = '0123456789'
