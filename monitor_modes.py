@@ -2,6 +2,7 @@
     The classes and functions herein are for the express purpose
     of creating and displaying menus while also connecting menus to eachother.
 """
+from numpy import ushort
 import pyodbc
 import pandas as pd
 from time import sleep
@@ -171,14 +172,11 @@ class Chooser:
         elif _ == 4:
             ScreenTools.screen_clear()
             print('*' * 20)
-            print('What do you want to view?')
+            print("What is your query?\nPlease note that [Brackets] must be used around column names.\nAlso note that 'Parentheses' are required for word values.")
+            print('!! This will be inserted into an SQL WHERE clause. !!')
             print('*' * 20)
             print()
-            print('* View a list of all books:\n* Press 1')
-            print()
-            print('* View a count of all books:\n* Press 2')
-            print()
-            user_input = int(input())
+            user_input = input()
 
             DBcontrol.customQueryControl(user_input)
 
@@ -371,13 +369,13 @@ class DBcontrol:
 
         # Allow the user to continue.
         print('*' * 20)
-        print('Would you like to continue?')
+        print('Would you like to close the program?')
         print('*' * 20)
         user_input = input()
         if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
-        elif user_input in Chooser.sayNay:
             ScreenTools.running = False
+        elif user_input in Chooser.sayNay:
+            MainMenu.startMenu()
             
     def unreadBookControl(_):
         """
@@ -394,13 +392,13 @@ class DBcontrol:
 
         # Allow the user to continue.
         print('*' * 20)
-        print('Would you like to continue?')
+        print('Would you like to close the program?')
         print('*' * 20)
         user_input = input()
         if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
-        elif user_input in Chooser.sayNay:
             ScreenTools.running = False
+        elif user_input in Chooser.sayNay:
+            MainMenu.startMenu()
 
     def readBookControl(_):
         """
@@ -417,13 +415,13 @@ class DBcontrol:
 
         # Allow the user to continue.
         print('*' * 20)
-        print('Would you like to continue?')
+        print('Would you like to close the program?')
         print('*' * 20)
         user_input = input()
         if user_input in Chooser.sayYay:
-            MainMenu.startMenu()
-        elif user_input in Chooser.sayNay:
             ScreenTools.running = False
+        elif user_input in Chooser.sayNay:
+            MainMenu.startMenu()
 
     def addBookControl():
         """
@@ -553,7 +551,7 @@ class DBcontrol:
         print()
         user_input = input()
         if user_input in Chooser.sayYay:
-            DBcontrol.askBookInfo()
+            DBcontrol.addBookControl()
         elif user_input in Chooser.sayNay:
             MainMenu.startMenu()
 
@@ -661,4 +659,37 @@ class DBcontrol:
 
 
     def customQueryControl(_):
-        pass
+        """
+            This function allows for the user to enter custom information into 
+        """
+        # Create the query based on user input.
+        open_query = f"SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE {_}"
+
+        # Contact the db and make the query
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            cursor = conx.cursor()
+            # extract data from executed query
+            records = cursor.execute(open_query).fetchall()
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+            selection = df[['Title', 'Author', 'Pages', 'Read_Yet']]
+            print('*' * 20)
+            print('Here are your results:')
+            print('*' * 20)
+            print(selection)
+            print()
+
+        print('*' * 20)
+        print('Would you like to enter another query?')
+        print('*' * 20)
+        print()
+        user_input = input()
+        if user_input in Chooser.sayYay:
+            Chooser.queryChooser(4)
+        elif user_input in Chooser.sayNay:
+            MainMenu.startMenu()
