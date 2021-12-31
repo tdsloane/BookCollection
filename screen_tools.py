@@ -16,4 +16,9 @@ class Tools:
             _ = os.system('cls')
 
 
-
+    def goodbye():
+        Tools.screen_clear()
+        print('*' * 20)
+        print("Goodbye! Happy Reading!")
+        print('*' * 20)
+        Tools.running = False

@@ -2,7 +2,6 @@
     The classes and functions herein are for the express purpose
     of creating and displaying menus while also connecting menus to eachother.
 """
-from os import altsep
 import pyodbc
 import pandas as pd
 from time import sleep
@@ -10,7 +9,9 @@ from screen_tools import Tools
 
 
 class MainMenu:
-
+    """
+        This class possesses the start menu, query menu, and mark menu.
+    """
     def startMenu(): 
         """
             This function displays the main menu.
@@ -21,8 +22,8 @@ class MainMenu:
         print('Welcome to the\nTDSloane Book System!')
         print('*' * 20)
         sleep(2)
-        Tools.screen_clear()
 
+        Tools.screen_clear()
         print('*' * 20)
         print('What would you like to do?')
         print('*' * 20)
@@ -43,6 +44,9 @@ class MainMenu:
                 Chooser.mainChooser(user_input) 
             else:
                 raise ValueError
+        # If the user input cannot be converted to an int
+        # or if the user input is not below 6
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
             Tools.screen_clear()
             print('*' * 20)
@@ -77,6 +81,9 @@ class MainMenu:
                 Chooser.queryChooser(user_input)
             else:
                 raise ValueError
+        # If the user input cannot be converted to an int
+        # or if the user input is not below 5
+        # we raise an error to the user and send the to the query menu.
         except ValueError:
             Tools.screen_clear()
             print('*' * 20)
@@ -99,8 +106,10 @@ class MainMenu:
         print()
         try:
             user_input = str(input())
+            # User says no
             if user_input in Chooser.sayNay:
                 MainMenu.queryMenu()
+            # user says yes
             elif user_input in Chooser.sayYay:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -112,6 +121,9 @@ class MainMenu:
                 DBcontrol.sendMarkQuery(user_input)
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not either yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
             Tools.screen_clear()
             print('*' * 20)
@@ -125,9 +137,11 @@ class Chooser:
     """
         This class houses chooser functions to aid navigation.
     """
+    # Recognised forms of yes and no
     sayNay = ['N', 'n', 'no', 'No']
     sayYay = ['Y', 'y', 'yes', 'Yes']
 
+    # Junction for the main menu
     def mainChooser(_):
         """
             This function is a hub for choices on the main menu.
@@ -141,16 +155,15 @@ class Chooser:
         elif _ == 4:
             DBcontrol.deleteBook()
         elif _ == 5:
-            Tools.screen_clear()
-            print('*' * 20)
-            print("Goodbye! Happy Reading!")
-            print('*' * 20)
-            Tools.running = False
+            Tools.goodbye()
 
+    # Junction for query options
     def queryChooser(_):
         """
             This function is a hub for choices on the query menu.
         """
+
+        # The user wants to see information about unread books
         if _ == 1:
             Tools.screen_clear()
             print('*' * 20)
@@ -167,6 +180,9 @@ class Chooser:
                     DBcontrol.unreadBookControl(user_input)
                 else:
                     raise ValueError
+            # If the user input cannot be converted to an int
+            # or if the user input is not below 3
+            # we raise an error to the user and send them back a step.
             except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -176,7 +192,7 @@ class Chooser:
                 Chooser.queryChooser(1)
 
             
-
+        # The user wants to see information about read books
         elif _ == 2:
             Tools.screen_clear()
             print('*' * 20)
@@ -194,6 +210,9 @@ class Chooser:
                     DBcontrol.readBookControl(user_input)
                 else:
                     raise ValueError
+            # If the user input cannot be converted to an int
+            # or if the user input is not below 3
+            # we raise an error to the user and send them back a step.
             except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -203,7 +222,7 @@ class Chooser:
                 Chooser.queryChooser(2)
 
             
-
+        # The user wants to see information about all books
         elif _ == 3:
             Tools.screen_clear()
             print('*' * 20)
@@ -220,6 +239,9 @@ class Chooser:
                     DBcontrol.viewBookControl(user_input)
                 else:
                     raise ValueError
+            # If the user input cannot be converted to an int
+            # or if the user input is not below 3
+            # we raise an error to the user and send them back a step.
             except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -229,7 +251,7 @@ class Chooser:
                 Chooser.queryChooser(3)
 
             
-
+        # The user wants to see information through a custom query
         elif _ == 4:
             Tools.screen_clear()
             print('*' * 20)
@@ -328,6 +350,9 @@ class DBcontrol:
             print(selection)
             print()
 
+            del selection
+            del query
+
 
     def sendCountQuery(query):
         """
@@ -386,6 +411,7 @@ class DBcontrol:
             print()
             try:
                 user_input = str(input())
+                # If user says yes
                 if user_input in Chooser.sayYay:
                     mark_read = 1
                     cursor.execute("UPDATE [PersonalLibrary].[dbo].[BookShelf] SET [Read_Yet] = ? WHERE [ISBN] = ?", mark_read, isbn)
@@ -413,12 +439,17 @@ class DBcontrol:
                     print('*' * 20)
                     try:
                         user_input = str(input())
+                        # If user says yes
                         if user_input in Chooser.sayYay:
                             MainMenu.markBook()
+                        # If user says no
                         elif user_input in Chooser.sayNay:
                             MainMenu.startMenu()
                         else:
                             raise ValueError
+                    # If the user input cannot be converted to a str
+                    # or if the user input is not yes or no
+                    # we raise an error to the user and send the to the main menu.
                     except ValueError:
                         Tools.screen_clear()
                         print('*' * 20)
@@ -426,6 +457,9 @@ class DBcontrol:
                         print('*' * 20)
                         sleep(3)
                         MainMenu.startMenu()
+            # If the user input cannot be converted to a str
+            # or if the user input is not yes or no
+            # we raise an error to the user and send the to the main menu.
             except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -447,19 +481,25 @@ class DBcontrol:
         # User wants to see a count of books.
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
-
+        # Clear the query after use
+        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
         try:
             user_input = str(input())
+            # If user says yes
             if user_input in Chooser.sayYay:
-                Tools.running = False
+                Tools.goodbye()
+            # If user says no
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -480,19 +520,25 @@ class DBcontrol:
         # User wants to see a count of books.
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
-
+        # Clear the query    
+        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
-        try:
+        try:  
             user_input = str(input())
+            # User says yes
             if user_input in Chooser.sayYay:
-                Tools.running = False
+                Tools.goodbye()
+            # User says no
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -513,19 +559,25 @@ class DBcontrol:
         # User wants to see a count of books.
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
-
+        # Clear the Query
+        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
         print('*' * 20)
         try:
             user_input = str(input())
+            # User says yes
             if user_input in Chooser.sayYay:
-                Tools.running = False
+                Tools.goodbye()
+            # User says no
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -545,6 +597,8 @@ class DBcontrol:
         print("Say yes or no.")
         print('*' * 20)
         print()
+        # This try block is for the initial yes or no
+        # interior try blocks are attempting to validate information.
         try:
             user_input = str(input())
             if user_input in Chooser.sayYay:
@@ -712,13 +766,15 @@ class DBcontrol:
                 print('Here is what you have registered.\nIs this correct? ')
                 print('*' * 20)
                 print()
-                
+                # Check with the user about their accuracy.
                 print(f"ISBN: {isbn}\nTitle: {title}\nAuthor: {author}\nGenre: {genre}\nLanguage: {lang}\nPages: {pages}\nRead: {read_yet}\nPublisher: {pub}\nCollection: {collection_name}\nYear Published: {pub_year}")
                 print()
                 print('*' * 20)
                 user_input = input("Is this information correct?\nPlease say yes or no.\n")
+                # Get the user input on their own accuracy
                 try:
                     user_input = str(user_input)
+                    # User says yes
                     if user_input in Chooser.sayYay:
                         # Send it out!
                         DBcontrol.addToBookTable(isbn, title, author, genre, lang, pages, read_yet, pub, collection_name, pub_year)
@@ -727,6 +783,9 @@ class DBcontrol:
                         DBcontrol.addBookControl()
                     else:
                         raise ValueError
+                # If the user input cannot be converted to a str
+                # or if the user input is not yes or no
+                # we raise an error to the user and send the to the main menu.
                 except ValueError:
                     Tools.screen_clear()
                     print('*' * 20)
@@ -737,7 +796,9 @@ class DBcontrol:
 
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
-
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -753,12 +814,17 @@ class DBcontrol:
         print()
         try:
             user_input = str(input())
+            # User says yes
             if user_input in Chooser.sayYay:
                 DBcontrol.addBookControl()
+            # User says no
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -772,8 +838,7 @@ class DBcontrol:
             Adds a book to the db using user input.
         """
 
-        # [PersonalLibrary].[dbo].[BookShelf] ????
-        # Query must be redefined before runtime.
+        # Insert Query 
         query_book_table = f"""
         INSERT INTO [PersonalLibrary].[dbo].[BookShelf] 
         (
@@ -794,7 +859,7 @@ class DBcontrol:
         )
         """
 
-
+        # Values to be added in place of ? marks above
         data_values = (
             isbn, 
             title, 
@@ -807,9 +872,7 @@ class DBcontrol:
             collection_name, 
             pub_year
         )
-
-        # params = list(tuple(row) for row in data_values.values)
-
+        # Send the insert query to be executed
         DBcontrol.sendInsertQuery(query_book_table, data_values, isbn)
 
     def deleteBook():
@@ -825,8 +888,10 @@ class DBcontrol:
         print()
         try:
             user_input = str(input())
+            # User says no
             if user_input in Chooser.sayNay:
                 MainMenu.queryMenu()
+            # User says yes
             elif user_input in Chooser.sayYay:
                 Tools.screen_clear()
                 print('*' * 40)
@@ -848,7 +913,7 @@ class DBcontrol:
                             data=records,
                             columns=columns
                         )
-
+                        # Pull up whatever book matches the isbn provided
                         filt = (df['ISBN'] == int(isbn))
                         print(df.loc[filt])
                         print()
@@ -858,6 +923,7 @@ class DBcontrol:
                         print()
                         try:
                             user_input = str(input())
+                            # User says yes
                             if user_input in Chooser.sayYay:
                                 # Query must be redefined before runtime.
                                 # Mutliple queries might need to be run.
@@ -868,10 +934,14 @@ class DBcontrol:
                                 print('*' * 20)
                                 print("Book removed from list.")
                                 print('*' * 20)
+                            # User says no
                             elif user_input in Chooser.sayNay:
                                 DBcontrol.deleteBook()
                             else:
                                 raise ValueError
+                        # If the user input cannot be converted to a str
+                        # or if the user input is not yes or no
+                         # we raise an error to the user and send the to the main menu.
                         except ValueError:
                             Tools.screen_clear()
                             print('*' * 20)
@@ -888,7 +958,9 @@ class DBcontrol:
                     sleep(3)
                     DBcontrol.deleteBook()
                 
-
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
@@ -917,6 +989,7 @@ class DBcontrol:
                 data=records,
                 columns=columns
             )
+            # Filter through the DataFrame and print it
             selection = df[['Title', 'Author', 'Pages', 'Read_Yet']]
             print('*' * 20)
             print('Here are your results:')
@@ -930,12 +1003,17 @@ class DBcontrol:
         print()
         try:
             user_input = str(input())
+            # User says yes
             if user_input in Chooser.sayYay:
                 Chooser.queryChooser(4)
+            # User says no
             elif user_input in Chooser.sayNay:
                 MainMenu.startMenu()
             else:
                 raise ValueError
+        # If the user input cannot be converted to a str
+        # or if the user input is not yes or no
+        # we raise an error to the user and send the to the main menu.
         except ValueError:
                 Tools.screen_clear()
                 print('*' * 20)
