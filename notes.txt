@@ -1,5 +1,4 @@
 # TO DO:
-    - BUG ALERT: Despite my best efforts a bug where querying the database from read, unread, and all, results in all subsequent queries being printed unintentially in the result. I have tried deleting the query string and the selection dataframe after use but the problem persists. 
     - Research connecting to db from another computer (it's just local for now but we could look up how much it may cost to have a server hosted.)
     - Make executable.
     - Rest
