@@ -118,6 +118,7 @@ class MainMenu:
                 print('*' * 20)
                 print()
                 user_input = int(input())
+                # DBcontrol.checkISBNFalse(user_input)
                 DBcontrol.sendMarkQuery(user_input)
             else:
                 raise ValueError
@@ -140,31 +141,33 @@ class Chooser:
     # Recognised forms of yes and no
     sayNay = ['N', 'n', 'no', 'No']
     sayYay = ['Y', 'y', 'yes', 'Yes']
+    num_list = ['1','2','3','4','5','6','7','8','9','0']
+    special_char = ['!','@','#','$','%','^','&','*','(',')','_','-','+','=',',','.','/','<>','?',';',':','”']
 
     # Junction for the main menu
-    def mainChooser(_):
+    def mainChooser(user_input):
         """
             This function is a hub for choices on the main menu.
         """
-        if _ == 1:
+        if user_input == 1:
             MainMenu.queryMenu()
-        elif _ == 2:
+        elif user_input == 2:
             DBcontrol.addBookControl()
-        elif _ == 3:
+        elif user_input == 3:
             MainMenu.markBook()
-        elif _ == 4:
+        elif user_input == 4:
             DBcontrol.deleteBook()
-        elif _ == 5:
+        elif user_input == 5:
             Tools.goodbye()
 
     # Junction for query options
-    def queryChooser(_):
+    def queryChooser(user_input):
         """
             This function is a hub for choices on the query menu.
         """
 
         # The user wants to see information about unread books
-        if _ == 1:
+        if user_input == 1:
             Tools.screen_clear()
             print('*' * 20)
             print('Tell me what you want to see!')
@@ -193,7 +196,7 @@ class Chooser:
 
             
         # The user wants to see information about read books
-        elif _ == 2:
+        elif user_input == 2:
             Tools.screen_clear()
             print('*' * 20)
             print('Tell me what you want to see!')
@@ -223,7 +226,7 @@ class Chooser:
 
             
         # The user wants to see information about all books
-        elif _ == 3:
+        elif user_input == 3:
             Tools.screen_clear()
             print('*' * 20)
             print('What do you want to view?')
@@ -252,7 +255,7 @@ class Chooser:
 
             
         # The user wants to see information through a custom query
-        elif _ == 4:
+        elif user_input == 4:
             Tools.screen_clear()
             print('*' * 20)
             print("What is your query?\nPlease note that [Brackets] must be used around column names.\nAlso note that 'Parentheses' are required for word values.")
@@ -349,9 +352,6 @@ class DBcontrol:
             print('*' * 20)
             print(selection)
             print()
-
-            del selection
-            del query
 
 
     def sendCountQuery(query):
@@ -468,7 +468,7 @@ class DBcontrol:
                 sleep(3)
                 MainMenu.markBook()
 
-    def viewBookControl(_):
+    def viewBookControl(user_input):
         """
             Controls the sql query requierd to view the entire library or count the total of books. Creates a connection
         """
@@ -481,8 +481,6 @@ class DBcontrol:
         # User wants to see a count of books.
         elif _ == 2:
             DBcontrol.sendCountQuery(query)
-        # Clear the query after use
-        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
@@ -508,20 +506,18 @@ class DBcontrol:
                 sleep(3)
                 MainMenu.startMenu()
             
-    def unreadBookControl(_):
+    def unreadBookControl(user_input):
         """
             Controls the sql query requierd to view all unread books in the db.
         """
         query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE [Read_Yet] = 0" 
         
         # User wants to see all books.
-        if _ == 1:
+        if user_input == 1:
             DBcontrol.sendFullQuery(query)
         # User wants to see a count of books.
-        elif _ == 2:
+        elif user_input == 2:
             DBcontrol.sendCountQuery(query)
-        # Clear the query    
-        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
@@ -547,20 +543,18 @@ class DBcontrol:
                 sleep(3)
                 MainMenu.startMenu()
 
-    def readBookControl(_):
+    def readBookControl(user_input):
         """
             Controls the sql query requierd to view all read books in the db.
         """
         query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE [Read_Yet] = 1" 
         
         # User wants to see all books.
-        if _ == 1:
+        if user_input == 1:
             DBcontrol.sendFullQuery(query)
         # User wants to see a count of books.
-        elif _ == 2:
+        elif user_input == 2:
             DBcontrol.sendCountQuery(query)
-        # Clear the Query
-        del query
         # Allow the user to continue.
         print('*' * 20)
         print('Would you like to close the program?')
@@ -609,6 +603,7 @@ class DBcontrol:
                 print()
                 try:
                     isbn = int(input())
+                    # DBcontrol.checkISBNTrue(isbn)
                 except ValueError:
                     Tools.screen_clear()
                     print('*' * 20)
@@ -652,24 +647,32 @@ class DBcontrol:
                 print()
                 
                 Tools.screen_clear()
-
                 print('*' * 20)
                 print('What language is the book in?')
                 print('*' * 20)
                 print()
-                lang = input()
-                if len(lang) > 50:
-                    print('*' * 20)
-                    print('Try again...\nLanguage cannot be more than 50 characters long.')
-                    print('*' * 20)
-                    sleep(5)
-                    DBcontrol.addBookControl()
-                elif int(lang) or float(lang):
-                    print('*' * 20)
-                    print('Try again...\nLanguage cannot contain numbers.')
-                    print('*' * 20)
-                    sleep(5)
-                    DBcontrol.addBookControl()
+                try:
+                    lang = input()
+                    lang_length = len(lang)
+                    if int(lang_length) > 50:
+                        print('*' * 20)
+                        print('Try again...\nLanguage cannot be more than 50 characters long.')
+                        print('*' * 20)
+                        sleep(5)
+                        DBcontrol.addBookControl()
+                    for l in lang:
+                        if l in Chooser.num_list:
+                            Tools.screen_clear()
+                            print(f"Reject input because of {l}\nInput should not include numbers.")
+                            sleep(3)
+                            DBcontrol.addBookControl()
+                        if l in Chooser.special_char:
+                            Tools.screen_clear()
+                            print(f"Reject input because of {l}\nInput should not include special characters.")
+                            sleep(3)
+                            DBcontrol.addBookControl()
+                except Exception as e:
+                    print(f"Somthing went wrong. ERROR: {e}, Lang = {lang}, Length = {type(lang_length)} ")                    
                 print()
 
                 print('*' * 20)
@@ -970,12 +973,12 @@ class DBcontrol:
                 MainMenu.startMenu()
 
 
-    def customQueryControl(_):
+    def customQueryControl(input):
         """
             This function allows for the user to enter custom information into 
         """
         # Create the query based on user input.
-        open_query = f"SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE {_}"
+        open_query = f"SELECT * FROM [PersonalLibrary].[dbo].[BookShelf] WHERE {input}"
 
         # Contact the db and make the query
         with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
@@ -1021,3 +1024,56 @@ class DBcontrol:
                 print('*' * 20)
                 sleep(3)
                 MainMenu.startMenu()
+
+    def checkISBNTrue(isbn):
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            cursor = conx.cursor()
+            # Create new query for creation of printed check
+            checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+            # fetch data 
+            records = cursor.execute(checking_query).fetchall()
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+            # Pull up whatever book matches the isbn provided
+            if (df['ISBN'] == int(isbn)):
+                print('*' * 20)
+                print("This ISBN already exists.\nPlease try again.")
+                print('*' * 20)
+                DBcontrol.addBookControl()
+
+    def checkISBNFalse(isbn):
+        print("Checking system for isbn...")
+        sleep(1)
+        with pyodbc.connect(DBcontrol.CONNECTION_STRING) as conx:
+            cursor = conx.cursor()
+            # Create new query for creation of printed check
+            checking_query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]"
+            # fetch data 
+            records = cursor.execute(checking_query).fetchall()
+            print("Records created...")
+            sleep(2)
+            # Define column names
+            columns = [column[0] for column in cursor.description]
+            # Dump the data into a dataframe
+            df = pd.DataFrame.from_records(
+                data=records,
+                columns=columns
+            )
+            print("Dataframe Created...")
+            sleep(2)
+            # Pull up whatever book matches the isbn provided
+            if (df['ISBN']) == False:
+                print('*' * 20)
+                print("No book with this ISBN exists.\nPlease trya agin.")
+                print('*' * 20)
+                sleep(3)
+                DBcontrol.addBookControl()
+            print("Book found!")
+            sleep(3)
+
+        return isbn

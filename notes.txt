@@ -1,4 +1,5 @@
 # TO DO:
+    - Add feature that checks if the isbn is already in the system and isn't already in the system.
     - Research connecting to db from another computer (it's just local for now but we could look up how much it may cost to have a server hosted.)
     - Make executable.
     - Rest
