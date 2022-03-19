@@ -23,7 +23,7 @@ class MainMenu:
         print('*' * 20)
         sleep(2)
 
-        Tools.screen_clear()
+        # Tools.screen_clear()
         print('*' * 20)
         print('What would you like to do?')
         print('*' * 20)
@@ -476,7 +476,7 @@ class DBcontrol:
         query = "SELECT * FROM [PersonalLibrary].[dbo].[BookShelf]" 
         
         # User wants to see all books.
-        if _ == 1:
+        if user_input == 1:
             DBcontrol.sendFullQuery(query)
         # User wants to see a count of books.
         elif _ == 2:
